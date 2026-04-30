@@ -65,29 +65,90 @@ This might be helpful for:
 
 ## Quick Start
 
-### Using Docker (Easiest)
+### Using Make + Docker (Recommended)
+
+Make is the easiest way to run Samarium. It handles secret generation, Docker
+orchestration, migrations, and asset compilation in a single command.
+
+**Prerequisites:** [Docker Desktop](https://www.docker.com/products/docker-desktop/),
+`make` ([install on Windows](#windows))
+
 ```bash
 git clone https://github.com/oitcode/samarium.git
 cd samarium
-cp .env.docker.example .env
-docker-compose up --build -d
-
-# First-time setup only
-docker exec -it samarium_app npm run dev
-docker exec -it samarium_app composer dump-autoload
-docker exec -it samarium_app php artisan migrate
-docker exec -it samarium_app php artisan key:generate
-docker exec -it samarium_app php artisan storage:link
-docker exec -it samarium_app php artisan db:seed
-
-# Visit: http://127.0.0.1:8000 (website)
-# Dashboard: http://127.0.0.1:8000/dashboard
+make install
 ```
+
+That's it. `make install` will:
+1. Create `.env` from `.env.docker.example`
+2. Generate random secrets for `APP_KEY`, `DB_PASSWORD`, `MYSQL_ROOT_PASSWORD`, and `ADMIN_PASSWORD`
+3. Build the Docker image
+4. Start all containers (app, MySQL, Redis) and wait until healthy
+5. Run database migrations
+6. Seed the database (admin user created from `ADMIN_EMAIL` / `ADMIN_PASSWORD` in `.env`)
+7. Compile frontend assets
+
+Visit **http://localhost:8000** — dashboard at **/dashboard**.
+
+#### Daily commands
+
+```bash
+make up          # Start containers
+make down        # Stop containers
+make logs        # Stream container logs
+make shell       # Open bash inside the app container
+
+make migrate     # Run new migrations
+make seed        # Re-seed the database
+make fresh       # Drop all tables, migrate and seed from scratch
+make assets      # Recompile frontend assets (development)
+make assets-prod # Recompile frontend assets (minified)
+make test        # Run the PHPUnit test suite
+
+make ps          # Show container status
+make clean CONFIRM=yes  # Remove all containers and volumes (destructive)
+```
+
+Run `make` with no arguments to see all available commands.
+
+#### Customising before first run
+
+Edit `.env` before running `make install` to change the admin credentials,
+app URL, or any other setting:
+
+```bash
+# After cloning, generate the .env without starting containers:
+make setup
+
+# Edit .env — change ADMIN_EMAIL, ADMIN_PASSWORD, APP_URL, etc.
+nano .env   # or open in your editor
+
+# Then run the full install:
+make install
+```
+
+#### Windows
+
+Install `make` with one of these options, then run commands in **Git Bash** or **WSL**:
+
+```bash
+# Option A — Chocolatey (run PowerShell as Administrator)
+choco install make
+
+# Option B — Scoop
+scoop install make
+
+# Option C — WSL (Ubuntu already includes make)
+sudo apt install make
+```
+
+> **WSL users:** run all commands from the WSL terminal, not PowerShell.
+> The project path inside WSL will be `/mnt/d/samarium` (adjust drive letter as needed).
 
 ## Installation
 
 <details>
-<summary>Manual Installation (requires PHP, MySQL, etc.)</summary>
+<summary>Manual Installation (without Docker)</summary>
 
 ### Requirements
 - PHP >= 8.2
