@@ -74,6 +74,21 @@ class CalendarComponent extends Component
         'Chaitra' => [ '2026-03-15', '2026-04-13', ],
     ];
 
+    public $monthInfo2083 = [
+        'Baisakh' => [ '2026-04-14', '2026-05-14', ],
+        'Jestha' => [ '2026-05-15', '2026-06-14', ],
+        'Asadh' => [ '2026-06-15', '2026-07-16', ],
+        'Shrawan' => [ '2026-07-17', '2026-08-16', ],
+        'Bhadra' => [ '2026-08-17', '2026-09-16', ],
+        'Ashwin' => [ '2026-09-17', '2026-10-17', ],
+        'Kartik' => [ '2026-10-18', '2026-11-16', ],
+        'Mangsir' => [ '2026-11-17', '2026-12-15', ],
+        'Poush' => [ '2026-12-16', '2027-01-14', ],
+        'Magh' => [ '2027-01-15', '2027-02-12', ],
+        'Falgun' => [ '2027-02-13', '2027-03-14', ],
+        'Chaitra' => [ '2027-03-15', '2027-04-13', ],
+    ];
+
     public $monthBook = array();
 
     public $displayMonthName;
@@ -115,15 +130,19 @@ class CalendarComponent extends Component
     {
         $today = Carbon::today();
 
-        foreach ($this->monthInfo2082 as $key => $val) {
-            $monthStartDate = $val[0];
-            $monthEndDate = $val[1];
+        $allYears = [
+            $this->monthInfo2083,
+            $this->monthInfo2082,
+            $this->monthInfo2081,
+            $this->monthInfo2080,
+            $this->monthInfo,
+        ];
 
-            $monthStartDay = Carbon::parse($monthStartDate);
-            $monthEndDay = Carbon::parse($monthEndDate);
-
-            if ($today >= $monthStartDay && $today <= $monthEndDay) {
-                return $key;
+        foreach ($allYears as $yearData) {
+            foreach ($yearData as $key => $val) {
+                if ($today >= Carbon::parse($val[0]) && $today <= Carbon::parse($val[1])) {
+                    return $key;
+                }
             }
         }
 
@@ -154,10 +173,35 @@ class CalendarComponent extends Component
         }
     }
 
+    private function resolveMonthData(string $monthName): array
+    {
+        foreach ([$this->monthInfo2083, $this->monthInfo2082, $this->monthInfo2081, $this->monthInfo2080, $this->monthInfo] as $yearData) {
+            $today = Carbon::today();
+            if (isset($yearData[$monthName])) {
+                $start = Carbon::parse($yearData[$monthName][0]);
+                $end   = Carbon::parse($yearData[$monthName][1]);
+                // Use the range that contains today, or the most recent one if none match
+                if ($today >= $start && $today <= $end) {
+                    return $yearData[$monthName];
+                }
+            }
+        }
+        // Fallback: return the most recent year that has this month
+        foreach ([$this->monthInfo2083, $this->monthInfo2082, $this->monthInfo2081, $this->monthInfo2080, $this->monthInfo] as $yearData) {
+            if (isset($yearData[$monthName])) {
+                return $yearData[$monthName];
+            }
+        }
+        return [];
+    }
+
     public function populateMonthBook(): void
     {
-        $monthStartDate = $this->monthInfo2082[$this->displayMonthName][0];
-        $monthEndDate = $this->monthInfo2082[$this->displayMonthName][1];
+        $monthData = $this->resolveMonthData($this->displayMonthName);
+        if (empty($monthData)) return;
+
+        $monthStartDate = $monthData[0];
+        $monthEndDate   = $monthData[1];
 
         $monthStartDay = Carbon::parse($monthStartDate);
         $monthEndDay = Carbon::parse($monthEndDate);

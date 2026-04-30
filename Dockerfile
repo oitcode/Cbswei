@@ -38,7 +38,8 @@ RUN chgrp -R www-data /var/www/html/storage \
     && chmod -R g+w /var/www/html/bootstrap/cache
 
 # Install PHP dependencies
-RUN composer install --no-scripts --no-autoloader
+RUN composer install --no-interaction --prefer-dist --no-scripts \
+ && composer dump-autoload --optimize
 
 # Install Node.js dependencies
 RUN npm install
