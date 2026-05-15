@@ -27,7 +27,7 @@ class UserCreate extends Component
         $validatedData = $this->validate([
             'name' => 'required|string',
             'email' => 'required|email|unique:users',
-            'role' => 'required',
+            'role' => 'required|in:admin,standard',
             'password' => 'required',
             'password_confirm' => 'required|same:password',
         ]);
