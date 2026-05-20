@@ -74,6 +74,21 @@ class CalendarComponent extends Component
         'Chaitra' => [ '2026-03-15', '2026-04-13', ],
     ];
 
+    static $monthInfo2083 = [
+        'Baisakh' => [ '2026-04-14', '2026-05-14', ],
+        'Jestha' => [ '2026-05-15', '2026-06-14', ],
+        'Asadh' => [ '2026-06-15', '2026-07-16', ],
+        'Shrawan' => [ '2026-07-17', '2026-08-16', ],
+        'Bhadra' => [ '2026-08-17', '2026-09-16', ],
+        'Ashwin' => [ '2026-09-17', '2026-10-17', ],
+        'Kartik' => [ '2026-10-18', '2026-11-16', ],
+        'Mangsir' => [ '2026-11-17', '2026-12-15', ],
+        'Poush' => [ '2026-12-16', '2027-01-14', ],
+        'Magh' => [ '2027-01-15', '2027-02-12', ],
+        'Falgun' => [ '2027-02-13', '2027-03-14', ],
+        'Chaitra' => [ '2027-03-15', '2027-04-13', ],
+    ];
+
     public $monthBook = array();
 
     public $displayMonthName = '';
@@ -110,8 +125,8 @@ class CalendarComponent extends Component
 
     public function populateMonthBook(): void
     {
-        $monthStartDate = $this->monthInfo2082[$this->displayMonthName][0];
-        $monthEndDate = $this->monthInfo2082[$this->displayMonthName][1];
+        $monthStartDate = $this->monthInfo2083[$this->displayMonthName][0];
+        $monthEndDate = $this->monthInfo2083[$this->displayMonthName][1];
 
         $monthStartDay = Carbon::parse($monthStartDate);
         $monthEndDay = Carbon::parse($monthEndDate);
