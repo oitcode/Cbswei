@@ -220,8 +220,12 @@ class WebsiteController extends Controller
 
     public function pdfDisplayFile($documentFileId)
     {
-        $documentFile = DocumentFile::find($documentFileId);
-
-        return response()->file('storage/' . $documentFile->file_path);
+        $documentFile = DocumentFile::findOrFail($documentFileId);
+        if(Gate::allows('view-document-file', $documentFile)) {
+            return response()->file('storage/' . $documentFile->file_path);
+        }
+        else{
+            return 'Not allowed to view this document file.';
+        }
     }
 }

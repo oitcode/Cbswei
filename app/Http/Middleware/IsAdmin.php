@@ -19,7 +19,7 @@ class IsAdmin
         if (Auth::user() &&  Auth::user()->role == 'admin') {
             return $next($request);
         } else {
-            return redirect()->back()->with('unauthorised', 'You are not authorized to access this page');
+            return redirect()->route('login')->with('unauthorised', 'You are not authorized to access this page');
         }
     }
 }
